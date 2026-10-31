@@ -1,10 +1,21 @@
 from pathlib import Path
 import html
 import json
+import hashlib
+import re
 
 root = Path(__file__).resolve().parents[1]
 docs = root / 'docs'
 (docs / 'work').mkdir(exist_ok=True)
+versions = {name: hashlib.sha256((docs / name).read_bytes()).hexdigest()[:10]
+            for name in ('style.css', 'app.js', 'data/videos.json')}
+page_version = hashlib.sha256(Path(__file__).read_bytes() + ''.join(versions.values()).encode()).hexdigest()[:10]
+
+
+def version_page_links(markup):
+    return re.sub(r'href="([^":?]+\.html)(#[^"]*)?"',
+                  lambda m: f'href="{m[1]}?v={page_version}{m[2] or ""}"', markup)
+
 projects = [
     {
         'id': 'proc-lens', 'name': 'proc-lens',
@@ -70,7 +81,7 @@ def head(title, desc, prefix=''):
 <meta name="theme-color" content="#fafaf8"><meta name="description" content="{html.escape(desc, quote=True)}">
 <meta property="og:title" content="{html.escape(title, quote=True)}"><meta property="og:description" content="{html.escape(desc, quote=True)}">
 <title>{html.escape(title)}</title><link rel="icon" href="{prefix}assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="{prefix}style.css"><script src="{prefix}app.js" defer></script>
+<link rel="stylesheet" href="{prefix}style.css?v={versions["style.css"]}"><script src="{prefix}app.js?v={versions["app.js"]}" data-video-version="{versions["data/videos.json"]}" defer></script>
 </head>
 <body><a class="skip" href="#main">Skip to content</a>'''
 
@@ -129,7 +140,7 @@ page += '''</div></section>
 <p>A side project: ''' + link('History At Site', 'https://github.com/JOON0512/History_At_Site') + ''', a globe for exploring where and when films are set.</p>
 </div></section>
 </main>''' + footer()
-(docs / 'index.html').write_text(page)
+(docs / 'index.html').write_text(version_page_links(page))
 
 for i, p in enumerate(projects):
     following = projects[(i + 1) % len(projects)]
@@ -145,7 +156,7 @@ for i, p in enumerate(projects):
     elif p.get('source_note'):
         page += f'<p class="source-note">{p["source_note"]}</p>'
     page += f'''</aside></div><a class="next-case" href="{following['id']}.html"><span>Next: {following['name']}</span><span aria-hidden="true">→</span></a></main>''' + footer('../')
-    (docs / 'work' / f"{p['id']}.html").write_text(page)
+    (docs / 'work' / f"{p['id']}.html").write_text(version_page_links(page))
 
 (docs / 'data/projects.json').write_text(json.dumps(projects, indent=2) + '\n')
 print('Built homepage and four project pages.')

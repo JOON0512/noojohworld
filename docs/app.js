@@ -21,7 +21,9 @@
   system.addEventListener('change', e => { if (!saved) apply(e.matches ? 'dark' : 'light'); });
   const videos = document.getElementById('videos');
   if (!videos) return;
-  fetch('data/videos.json').then(r => { if (!r.ok) throw new Error('Unavailable'); return r.json(); }).then(items => {
+  const videoVersion = document.querySelector('script[data-video-version]')?.dataset.videoVersion;
+  const videoPath = videoVersion ? `data/videos.json?v=${encodeURIComponent(videoVersion)}` : 'data/videos.json';
+  fetch(videoPath).then(r => { if (!r.ok) throw new Error('Unavailable'); return r.json(); }).then(items => {
     if (!Array.isArray(items)) return;
     for (const item of items) {
       if (!/^[\w-]{11}$/.test(item.id) || typeof item.title !== 'string') continue;

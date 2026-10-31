@@ -27,6 +27,8 @@ The text and project links work without JavaScript. Fonts fall back to system fo
 
 ## Deploy
 
+Generated URLs include content versions to avoid mixing new pages with cached styles, scripts, or video data.
+
 Commit the generated files. GitHub Pages serves `main` / `/docs` without an application server. The older `noojohojoon/` directory is outside the published site.
 
 Project descriptions distinguish coursework, team work, and personal projects. Diagrams explain structure; they do not represent measured results.
