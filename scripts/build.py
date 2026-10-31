@@ -1,53 +1,151 @@
 from pathlib import Path
-import json, html
-root=Path(__file__).resolve().parents[1]
-docs=root/'docs'
-(docs/'work').mkdir(exist_ok=True)
-projects=[
-{'id':'proc-lens','label':'01','name':'proc-lens','title':'변하는 프로세스를,<br>일관된 기록으로.','sub':'Linux 프로세스 관찰 도구','category':'SYSTEMS TOOL','tech':'C / Linux / QEMU','scope':'개인 학습 프로젝트 · 공개 코드','question':'프로세스는 계속 바뀌는데, 읽는 도중의 데이터는 어떻게 유지할까?','intro':'Linux의 프로세스 정보를 주기적으로 수집하고, 파일을 열어 읽는 동안 하나의 스냅샷을 유지하는 커널 모듈입니다.','points': [('문제','프로세스 생성·종료와 데이터 조회는 동시에 일어납니다. 정보를 출력하는 기능뿐 아니라, 수집한 객체와 읽는 데이터의 수명을 다루는 것이 핵심입니다.'),('구현의 초점','delayed_work로 수집을 반복하고, 참조 수명과 잠금을 관리합니다. 새 스냅샷을 교체하더라도 열린 파일에서는 해당 세대를 계속 읽도록 구성했습니다.'),('검증 기록','공개 저장소에는 Linux 6.8 / x86-64 QEMU 환경에서 부분 읽기와 seek, 동시 조회, 프로세스 생성·종료, 50회 load/read/unload를 검사한 절차가 있습니다.'),('배운 점','관찰 도구의 출력도 하나의 동시성 문제입니다. “파일을 읽는 동안 일관됨”과 “모든 필드가 정확히 같은 순간의 값임”은 다릅니다. RSS와 스케줄러 값은 수집 중에도 변할 수 있습니다.')], 'note':'검증 범위: Ubuntu Linux 6.8.0-147-generic / x86-64. KASAN·lockdep·메모리 부족 주입은 아직 검사하지 않았습니다.', 'links':[('소스 코드','https://github.com/JOON0512/proc-lens'),('구현·검증 기록','https://github.com/JOON0512/proc-lens/blob/main/docs/development.md')]},
-{'id':'gshare','label':'02','name':'gem5 × Gshare','title':'같은 예측기,<br>다른 인덱스 연산.','sub':'분기 예측기 비교 실험','category':'COMPUTER ARCHITECTURE','tech':'C++ / gem5 / RISC-V','scope':'종합설계 팀 프로젝트 · 2025','question':'인덱스 연산을 바꾸면 분기 예측과 실행 성능은 어떻게 달라질까?','intro':'gem5의 RISC-V O3CPU 환경에서 Gshare 인덱스 연산을 바꾸고, 워크로드에 따른 MPKI와 IPC 변화를 비교한 종합설계 팀 프로젝트입니다.','points':[('문제','분기 주소와 전역 히스토리를 결합하는 방식은 테이블 인덱스에 영향을 줍니다. 다른 연산을 사용했을 때 결과가 어떻게 달라지는지 비교했습니다.'),('비교한 조건','XOR·OR·AND·XNOR를 비교 대상으로 두고, 예측 테이블과 카운터 등의 조건을 유지했습니다. 그래프 워크로드에서 분기 예측 실패와 실행 성능 지표를 함께 살폈습니다.'),('관찰','워크로드에 따라 MPKI와 IPC의 변화가 달랐습니다. 하나의 연산이 항상 우월하다는 결론보다, 입력 특성과 예측 방식의 관계를 해석하는 과정이 중요했습니다.'),('이어지는 관심','이 실험은 프로그램의 특성과 하드웨어 정책을 함께 봐야 한다는 관심으로 이어졌습니다. 지금은 메모리 시스템과 데이터 이동이 실행 효율에 미치는 영향을 더 공부하고 있습니다.')], 'note':'팀 보고서와 학습 기록을 바탕으로 정리했습니다. 팀 전체의 구현을 개인 단독 성과로 표현하지 않았으며, 원시 로그를 재검증하지 않은 개선율은 싣지 않았습니다.', 'links':[]},
-{'id':'xv6','label':'03','name':'xv6-riscv labs','title':'운영체제를 읽고,<br>작게 바꿔보기.','sub':'스케줄링·메모리·스레드 실습','category':'OPERATING SYSTEMS','tech':'C / RISC-V / QEMU','scope':'운영체제론 수업 실습 · 2024','question':'정책 하나의 변화가 프로세스의 실행과 메모리에 어떻게 이어질까?','intro':'MIT xv6-riscv와 수업 제공 코드를 바탕으로 셸, 시스템콜, 스케줄러, 메모리와 스레드를 확장하며 운영체제의 실행 흐름을 학습했습니다.','points':[('실습의 범위','셸과 시스템콜에서 시작해 stride 스케줄링, Copy-on-Write와 메모리 할당, 스레드까지 단계별 과제를 진행했습니다.'),('구현을 읽는 관점','시스템콜이 사용자 코드에서 커널로 들어오는 경로, 스케줄러가 다음 실행 대상을 고르는 과정, 페이지를 공유하다 쓰는 시점에 분리하는 동작을 연결해 살폈습니다.'),('공개 기록','저장소에서 과제별 구현과 실행 안내를 확인할 수 있습니다. 공개 README의 검사 범위는 단일 CPU이며, 다중 CPU 동기화와 공정성 검증은 별도 과제입니다.'),('학습에서 설명으로','운영체제론 튜터링 경험과 함께, 개념을 코드의 동작에 연결해 설명하는 기반이 된 작업입니다.')], 'note':'MIT xv6 및 수업 골격 코드 기반의 학습 프로젝트입니다. 운영체제 전체를 처음부터 만든 프로젝트는 아닙니다.', 'links':[('실습 코드·실행 안내','https://github.com/JOON0512/yonsei-OS')]},
-{'id':'zynq','label':'04','name':'Zynq board labs','title':'버튼 입력에서<br>장치 드라이버까지.','sub':'하드웨어와 소프트웨어의 경계','category':'EMBEDDED SYSTEMS','tech':'C / Zynq / MMIO','scope':'임베디드시스템 수업 실습 · 2026','question':'하드웨어의 이벤트는 어떻게 소프트웨어의 상태와 출력으로 이어질까?','intro':'Zynq 보드에서 버튼 인터럽트, LED, BRAM, TFT-LCD와 문자 장치 드라이버를 다루며 입력부터 출력까지의 경로를 연결한 실습입니다.','points':[('이벤트와 상태','인터럽트 처리 루틴에서 상태를 갱신하고, main loop에서 LED 패턴을 처리하는 구조를 실습했습니다. 이벤트 수신과 출력 동작을 나누어 읽는 데 초점을 맞췄습니다.'),('메모리와 장치','제공된 IP와 BSP를 바탕으로 BRAM과 TFT-LCD를 제어하고, MMIO와 문자 장치 드라이버를 통해 사용자 프로그램과 하드웨어가 만나는 경로를 학습했습니다.'),('관찰한 제약','출력 루프의 busy-wait가 반응성에 미칠 수 있는 영향을 살폈습니다. 값이 쓰였다는 사실과 기대한 시점에 장치가 반응한다는 사실을 구분하는 경험이었습니다.'),('배운 점','인터럽트·메모리·드라이버를 따로 외우기보다 하나의 데이터 경로로 이해하게 되었습니다. 실행 흐름을 추적하는 관점이 운영체제 실습과도 연결됐습니다.')], 'note':'수업 제공 하드웨어·IP·BSP 및 예제를 바탕으로 한 실습입니다. Zynq SoC나 모든 IP를 독자 설계한 경험으로 표현하지 않습니다.', 'links':[('보드 실습 기록','https://github.com/JOON0512/yonsei-embedded-systems')]}
+import html
+import json
+
+root = Path(__file__).resolve().parents[1]
+docs = root / 'docs'
+(docs / 'work').mkdir(exist_ok=True)
+projects = [
+    {
+        'id': 'proc-lens', 'name': 'proc-lens',
+        'sub': 'A Linux process snapshot module',
+        'tech': 'C · Linux · QEMU', 'scope': 'Personal project',
+        'summary': "A Linux kernel module that keeps process snapshots stable while they're being read.",
+        'intro': 'A Linux kernel module that periodically collects process information and keeps a snapshot stable for each open file.',
+        'points': [
+            ('How it works', 'A delayed_work task collects process data. Reference counting and locking manage object lifetimes, while each open file retains its snapshot even when a newer one is published.'),
+            ('Checks', 'The repository documents QEMU checks for partial reads, seek, concurrent readers, process creation and exit, and 50 load/read/unload cycles. The test environment is Ubuntu Linux 6.8.0-147-generic on x86-64.'),
+            ('Limits', 'A stable snapshot does not mean every field was captured at the same instant: RSS and scheduler values can change during collection. KASAN, lockdep, and allocation-failure injection have not been tested.')
+        ],
+        'links': [('Code', 'https://github.com/JOON0512/proc-lens'), ('Development notes', 'https://github.com/JOON0512/proc-lens/blob/main/docs/development.md')]
+    },
+    {
+        'id': 'gshare', 'name': 'Gshare in gem5',
+        'sub': 'Comparing branch predictor indexing',
+        'tech': 'C++ · gem5 · RISC-V', 'scope': 'Team capstone · 2025',
+        'summary': 'Compared four indexing operations in a Gshare branch predictor using gem5.',
+        'intro': "We compared XOR, OR, AND, and XNOR indexing in a Gshare predictor on gem5's RISC-V O3CPU.",
+        'points': [
+            ('Experiment', 'We kept the prediction table and counter configuration fixed and ran graph workloads. We compared branch mispredictions per thousand instructions (MPKI) alongside instructions per cycle (IPC).'),
+            ('Takeaway', 'The results depended on the workload. Comparing MPKI and IPC together helped us see how changes in prediction behavior related to execution performance.')
+        ],
+        'links': [], 'source_note': 'Based on our course report, which is not publicly available.'
+    },
+    {
+        'id': 'xv6', 'name': 'xv6-riscv labs',
+        'sub': 'Scheduling, memory, and threads',
+        'tech': 'C · RISC-V · QEMU', 'scope': 'Coursework · 2024',
+        'summary': 'Exercises in system calls, scheduling, copy-on-write, and threads using xv6-riscv.',
+        'intro': 'Operating systems coursework built on MIT xv6-riscv and the course starter code.',
+        'points': [
+            ('Exercises', 'The assignments cover shell behavior, system calls, stride scheduling, copy-on-write, memory allocation, and threads. They helped me trace a request from user code into the kernel and follow how scheduling and memory policies affect execution.'),
+            ('Testing', 'The repository includes assignment code and run instructions. The documented checks use one CPU; multicore synchronization and scheduling fairness need separate verification.')
+        ],
+        'links': [('Code and run instructions', 'https://github.com/JOON0512/yonsei-OS')]
+    },
+    {
+        'id': 'zynq', 'name': 'Zynq board labs',
+        'sub': 'Interrupts, memory, and device drivers',
+        'tech': 'C · Zynq · MMIO', 'scope': 'Coursework · 2026',
+        'summary': 'Board exercises covering interrupts, BRAM, display control, and Linux device drivers.',
+        'intro': 'Embedded systems coursework on a Zynq board, using the supplied IP, BSP, and examples.',
+        'points': [
+            ('Exercises', 'I worked with button interrupts, LED patterns, BRAM, and a TFT-LCD. Interrupt handlers updated state, while the main loop handled output. Other exercises used memory-mapped I/O and a character device driver to connect user programs to the board.'),
+            ('Observation', 'A busy-wait in the output loop can affect responsiveness even when interrupts are handled correctly. Following the whole path from input to output made that distinction easier to see.')
+        ],
+        'links': [('Lab code', 'https://github.com/JOON0512/yonsei-embedded-systems')]
+    }
 ]
-def link(text,url,cls=''):
- return f'<a class="{cls}" href="{html.escape(url)}" target="_blank" rel="noopener noreferrer">{text}<span aria-hidden="true"> ↗</span></a>'
-def head(title,desc,prefix=''):
- return f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f8f9fc"><meta name="description" content="{desc}"><meta property="og:title" content="{title}"><meta property="og:description" content="{desc}"><title>{title}</title><link rel="icon" href="{prefix}assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="{prefix}style.css"><script src="{prefix}app.js" defer></script></head><body><a class="skip" href="#main">본문으로 바로가기</a>'''
+
+
+def link(text, url, cls=''):
+    return f'<a class="{cls}" href="{html.escape(url)}" target="_blank" rel="noopener noreferrer">{text}<span aria-hidden="true"> ↗</span></a>'
+
+
+def head(title, desc, prefix=''):
+    return f'''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fafaf8"><meta name="description" content="{html.escape(desc, quote=True)}">
+<meta property="og:title" content="{html.escape(title, quote=True)}"><meta property="og:description" content="{html.escape(desc, quote=True)}">
+<title>{html.escape(title)}</title><link rel="icon" href="{prefix}assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{prefix}style.css"><script src="{prefix}app.js" defer></script>
+</head>
+<body><a class="skip" href="#main">Skip to content</a>'''
+
+
 def header(prefix=''):
- home=prefix+'index.html' if prefix else '#home'
- return f'''<header class="header wrap"><a class="brand" href="{home}" aria-label="Hojoon Lee 홈"><span class="brand-mark" aria-hidden="true">h<span>↗</span></span><span>Hojoon Lee<span class="brand-sub">이호준</span></span></a><nav aria-label="주요 메뉴"><a href="{prefix}index.html#work">작업</a><a href="{prefix}index.html#teaching">튜터링</a><a href="{prefix}index.html#about">소개</a></nav><button class="theme-toggle" type="button" aria-label="어두운 테마로 전환" hidden><span aria-hidden="true">◐</span></button></header>'''
+    home = prefix + 'index.html' if prefix else '#home'
+    return f'''<header class="header wrap">
+<a class="brand" href="{home}" aria-label="Hojoon Lee, home">Hojoon Lee</a>
+<nav aria-label="Main navigation"><a href="{prefix}index.html#work">Work</a><a href="{prefix}index.html#teaching">Teaching</a><a href="{prefix}index.html#about">About</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode" hidden><span aria-hidden="true">◐</span></button>
+</header>'''
+
+
 def footer(prefix=''):
- return f'''<footer class="footer wrap"><span>© 2026 Hojoon Lee</span><span class="mono">Built to understand.</span><a href="{prefix}index.html#home">처음으로 ↑</a></footer></body></html>'''
+    return f'''<footer class="footer wrap"><span>© 2026 Hojoon Lee</span><a href="{prefix}index.html#home">Back to top ↑</a></footer></body></html>'''
+
+
 def visual(id):
- if id=='proc-lens':
-  return '''<div class="snapshot-diagram" role="img" aria-label="프로세스 수집, 스냅샷 교체, 파일별 세대 유지의 개념도"><div class="diagram-top mono"><span>PROCESS OBSERVATORY</span><span>● SNAPSHOT</span></div><div class="processes"><span>task A</span><span>task B</span><span>task C</span></div><div class="connector">↓ <span>delayed_work</span></div><div class="snapshot-box"><span class="mono">GENERATION n</span><div class="data-lines"><i></i><i></i><i></i><i></i></div><b>Process snapshot</b></div><div class="snapshot-bottom"><span class="mono">open → read → close</span><span>읽는 동안 같은 세대</span></div></div>'''
- if id=='gshare':
-  return '''<div class="logic-diagram" role="img" aria-label="분기 주소와 히스토리를 인덱스 연산으로 결합해 예측 테이블을 조회하는 개념도"><div class="logic-input"><span>Branch PC</span><span>Global history</span></div><div class="connector">↓</div><div class="operators"><b>XOR</b><span>OR</span><span>AND</span><span>XNOR</span></div><div class="connector">↓ <span>index</span></div><div class="table-cells">'''+''.join('<i></i>' for _ in range(16))+'''</div><p class="mono">PREDICTION TABLE → MPKI / IPC</p></div>'''
- if id=='xv6':
-  return '''<div class="os-diagram" role="img" aria-label="사용자 프로그램에서 시스템콜을 통해 커널의 스케줄러와 메모리에 접근하는 개념도"><div class="os-user mono">USER PROGRAM</div><div class="connector">↓ <span>system call</span></div><div class="os-kernel"><span class="mono">KERNEL</span><div><b>Scheduler</b><b>Memory</b><b>Threads</b></div></div><div class="os-base mono">RISC-V · QEMU</div></div>'''
- return '''<div class="board-diagram" role="img" aria-label="버튼 인터럽트가 상태를 바꾸고 메인 루프가 장치 출력을 처리하는 개념도"><span class="board-chip mono">ZYNQ</span><div class="board-flow"><span>Button</span><b>IRQ</b><span>State</span></div><div class="board-wire"></div><div class="board-flow bottom"><span>LED / LCD</span><b>Output</b><span>Main loop</span></div><p class="mono">EVENT → STATE → OUTPUT</p></div>'''
-p=projects[0]
-page=head('Hojoon Lee — Systems & Architecture','운영체제, 컴퓨터구조, 임베디드 시스템을 공부하는 연세대학교 전기전자공학부 이호준의 작업과 학습 기록.')+header()
-page+='''<main id="main"><section class="hero wrap" id="home"><div class="intro"><p class="eyebrow"><span class="status-dot"></span> ELECTRICAL & ELECTRONIC ENGINEERING</p><h1>Hojoon Lee<span>이호준</span></h1><p class="hero-statement">프로그램이 실행되는<br><em>그 안쪽</em>이 궁금합니다.</p><p class="hero-copy">연세대학교에서 전기전자공학을 공부합니다.<br>운영체제와 컴퓨터구조를 오가며, 소프트웨어가<br class="desktop-break"> 하드웨어 위에서 동작하는 방식을 탐구합니다.</p><div class="hero-links"><a class="button" href="#work">선별한 작업 보기 <span>↓</span></a>'''+link('GitHub','https://github.com/JOON0512','quiet-link')+'''</div></div><aside class="interest-map" aria-label="관심 분야와 연결되는 작업"><div class="map-label mono"><span>THINKING ACROSS LAYERS</span><span>01—03</span></div><a class="map-layer" href="work/xv6.html"><span class="layer-number">01</span><div><strong>Program</strong><small>프로그램에서 출발해</small></div><span class="layer-symbol">{ }</span></a><div class="map-line"><span>system call</span></div><a class="map-layer active" href="work/proc-lens.html"><span class="layer-number">02</span><div><strong>Operating system</strong><small>실행을 관찰하고</small></div><span class="layer-symbol">≋</span></a><div class="map-line"><span>execution & memory</span></div><a class="map-layer" href="work/gshare.html"><span class="layer-number">03</span><div><strong>Architecture</strong><small>하드웨어의 선택을 살핍니다</small></div><span class="layer-symbol">⊞</span></a><p class="map-caption">각 층을 눌러 관련 작업을 읽어보세요. ↗</p></aside></section><div class="wrap focus-strip"><span class="mono">CURRENT INTERESTS</span><p>운영체제 <span>/</span> 컴퓨터구조 <span>/</span> 메모리 시스템 <span>/</span> HW–SW 공동 설계</p></div>
-<section id="work" class="section wrap"><div class="section-head"><div><p class="eyebrow">01 / SELECTED WORK</p><h2>구현하고, 관찰하고, 이해한 것.</h2></div><p>네 가지 작업을 조금 더 깊게.</p></div><article class="featured" id="project-proc-lens"><div class="featured-copy"><p class="project-kicker mono">01 / SYSTEMS TOOL</p><h3>proc-lens</h3><p class="project-title">변하는 프로세스를,<br>일관된 기록으로.</p><p class="description">프로세스 정보를 수집하고, 읽는 동안 같은 스냅샷을 유지하는 Linux 커널 모듈. 데이터뿐 아니라 데이터의 수명을 다룹니다.</p><div class="tags"><span>C</span><span>Linux</span><span>QEMU</span></div><a class="text-link" href="work/proc-lens.html">설계와 검증 기록 <span>↗</span></a></div><a class="featured-visual" href="work/proc-lens.html" aria-label="proc-lens 상세 기록">'''+visual('proc-lens')+'''<span class="figure-caption mono">FIG. 01 — DATA LIFETIME / CONCEPT</span></a></article><div class="project-list">'''
-for p in projects[1:]:
- page+=f'''<article class="project-row" id="project-{p['id']}"><a class="project-preview" href="work/{p['id']}.html" aria-label="{p['name']} 상세 기록">{visual(p['id'])}</a><div class="row-copy"><p class="project-kicker mono">{p['label']} / {p['category']}</p><h3><a href="work/{p['id']}.html">{p['name']}</a></h3><p>{p['question']}</p><span class="project-meta">{p['scope']}<span>·</span>{p['tech']}</span></div><a class="arrow-link" href="work/{p['id']}.html" aria-label="{p['name']} 자세히 읽기">↗</a></article>'''
-page+='''</div></section><section id="teaching" class="teaching section"><div class="wrap teaching-layout"><div class="teaching-heading"><p class="eyebrow">02 / LEARNING TOGETHER</p><h2>이해한 만큼,<br>다시 설명합니다.</h2><p>개념을 배우는 일과<br>다른 사람의 이해를 돕는 일.<br>둘을 함께 이어가고 있습니다.</p><a class="text-link" href="https://github.com/JOON0512/yonsei-OS" target="_blank" rel="noopener noreferrer">운영체제 실습 코드 ↗</a></div><div class="teaching-entries"><article><span class="entry-index mono">01</span><div><p class="entry-role">연세대학교 전기전자공학부 명예학회</p><h3>운영체제론 튜터</h3><p>운영체제론을 공부하는 학생들의 학습을 지원했습니다. 직접 코드를 읽고 실습했던 경험을 개념 설명으로 연결한 활동입니다.</p></div></article><article><span class="entry-index mono">02</span><div><p class="entry-role">2025 봄 · 독수리 튜터링</p><h3>기초아날로그실험 튜터</h3><p>회로 이론과 PSpice, 계측 실습과 보고서 학습을 함께 살폈습니다. 다이오드에서 MOSFET, OP-Amp와 필터까지.</p></div></article><article><span class="entry-index mono">03</span><div><p class="entry-role">2022–2023 · CoMit</p><h3>함께 공부하는 환경 만들기</h3><p>동아리 부회장으로 스터디를 기획하고 C 언어 세션을 진행했습니다. 신입 부원의 기초 학습과 기존 회원의 학습 수요를 연결했습니다.</p></div></article></div></div><div id="video-section" class="wrap" hidden><h3>운영체제론 튜터링 영상</h3><div id="videos" class="video-grid"></div></div></section>
-<section id="about" class="section wrap about"><div class="section-head"><div><p class="eyebrow">03 / A LITTLE CONTEXT</p><h2>표현에서 시작해, 원리로.</h2></div></div><div class="about-layout"><div class="about-copy"><p class="lead">디자인을 공부하며 시작한 관심은<br>시스템을 이해하는 일로 이어졌습니다.</p><p>산업디자인과 시스템경영공학을 거쳐, 지금은 연세대학교 전기전자공학부에서 공부하고 있습니다. 화면에 나타나는 결과 뒤에서 프로그램과 하드웨어가 어떻게 협력하는지 알고 싶습니다.</p><p>최근에는 메모리 시스템과 데이터 이동, 실행 효율에 관심을 두고 있습니다. 구현을 읽고 조건을 바꾸어 실험하며 이해를 쌓아가고 있습니다.</p><div class="education"><span class="mono">2024 — PRESENT</span><div><strong>연세대학교 전기전자공학부</strong><span>학부 재학 · 2027년 2월 졸업 예정</span></div></div></div><div class="learning-notes"><h3 class="small-heading">관심을 넓힌 경험</h3><article><span class="mono">COMPILERS</span><h4>LLVM과 중간 표현</h4><p>CORELAB 학부 연구 참여 중 IRBuilder와 pass 튜토리얼을 학습하며 프로그램을 다른 층위에서 읽어봤습니다.</p>'''+link('학습 코드','https://github.com/JOON0512/LLVM101','small-link')+'''</article><article><span class="mono">DEVICES & MEASUREMENT</span><h4>소자와 측정 데이터</h4><p>나노소자연구실에서 지도 아래 ALD 공정 기초와 문헌 발표를 경험했습니다. 수업에서는 IGZO TFT 데이터의 파라미터 계산과 해석을 맡았습니다.</p></article></div></div><aside class="side-project"><span class="side-icon" aria-hidden="true">◎</span><div><p class="eyebrow">A DIFFERENT KIND OF EXPLORATION</p><h3>가끔은, 영화 속 장소를 탐험합니다.</h3><p>History At Site — 영화의 배경과 시대를 지구본 위에 연결한 웹 프로젝트.</p></div>'''+link('프로젝트 보기','https://github.com/JOON0512/History_At_Site','text-link')+'''</aside></section>
-<section class="contact wrap" id="contact"><div><p class="eyebrow">LET’S CONNECT</p><h2>같은 질문이 궁금하다면.</h2><p>시스템, 학습, 함께 만드는 프로젝트 이야기를 환영합니다.</p></div>'''+link('GitHub · JOON0512','https://github.com/JOON0512','button')+'''</section></main>'''+footer()
-(docs/'index.html').write_text(page)
-for i,p in enumerate(projects):
- q=projects[(i+1)%len(projects)]
- page=head(p['name']+' — Hojoon Lee',p['intro'],'../')+header('../')
- page+=f'''<main id="main" class="case wrap"><a href="../index.html#project-{p['id']}" class="back-link">← 모든 작업</a><header class="case-header"><p class="eyebrow">{p['label']} / {p['category']}</p><h1>{p['name']}</h1><p class="case-subtitle">{p['sub']}</p><div class="case-meta"><span>{p['scope']}</span><span>{p['tech']}</span></div></header><div class="case-layout"><article class="case-body"><p class="case-intro">{p['intro']}</p><blockquote>{p['question']}</blockquote>'''
- for n,(title,body) in enumerate(p['points'],1):
-  page+=f'<section><span class="mono section-number">0{n}</span><h2>{title}</h2><p>{body}</p></section>'
- page+=f'''<aside class="scope-note"><strong>작업 범위와 근거</strong><p>{p['note']}</p></aside></article><aside class="case-sidebar"><figure>{visual(p['id'])}<figcaption>핵심 흐름을 나타낸 개념도</figcaption></figure><div class="case-sources"><h2>관련 자료</h2>'''
- if p['links']:
-  page+=''.join(link(t,u,'source-link') for t,u in p['links'])
- else: page+='<p>종합설계 팀 보고서에 근거한 요약입니다. 현재 공개된 원문 링크는 없습니다.</p>'
- page+=f'''</div></aside></div><a class="next-case" href="{q['id']}.html"><span><small class="mono">NEXT PROJECT</small><strong>{q['name']}</strong></span><span>↗</span></a></main>'''+footer('../')
- (docs/'work'/f"{p['id']}.html").write_text(page)
-(docs/'data/projects.json').write_text(json.dumps(projects,ensure_ascii=False,indent=2)+'\n')
-(docs/'assets/favicon.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#2855d9"/><path d="M19 15v34m0-18c0-13 23-13 23 0v18" fill="none" stroke="white" stroke-width="6"/><circle cx="49" cy="16" r="4" fill="#a4c2ff"/></svg>')
-print('Built homepage + 4 case-study pages')
+    if id == 'proc-lens':
+        return '''<div class="snapshot-diagram" role="img" aria-label="Processes are collected into snapshots. Each reader keeps the same generation until it closes the file."><div class="diagram-top mono">PROCESS SNAPSHOT</div><div class="processes"><span>task A</span><span>task B</span><span>task C</span></div><div class="connector">↓ <span>delayed_work</span></div><div class="snapshot-box"><span class="mono">GENERATION n</span><div class="data-lines"><i></i><i></i><i></i><i></i></div><b>Process snapshot</b></div><div class="snapshot-bottom mono">open → read → close</div></div>'''
+    if id == 'gshare':
+        return '''<div class="logic-diagram" role="img" aria-label="The branch address and global history form an index into the prediction table."><div class="logic-input"><span>Branch PC</span><span>Global history</span></div><div class="connector">↓</div><div class="operators"><b>XOR</b><span>OR</span><span>AND</span><span>XNOR</span></div><div class="connector">↓ <span>index</span></div><div class="table-cells">''' + ''.join('<i></i>' for _ in range(16)) + '''</div><p class="mono">PREDICTION TABLE</p></div>'''
+    if id == 'xv6':
+        return '''<div class="os-diagram" role="img" aria-label="System calls connect a user program to the kernel's scheduler, memory, and threads."><div class="os-user mono">USER PROGRAM</div><div class="connector">↓ <span>system call</span></div><div class="os-kernel"><span class="mono">KERNEL</span><div><b>Scheduler</b><b>Memory</b><b>Threads</b></div></div><div class="os-base mono">RISC-V · QEMU</div></div>'''
+    return '''<div class="board-diagram" role="img" aria-label="A button interrupt updates state; the main loop handles output."><span class="board-chip mono">ZYNQ</span><div class="board-flow"><span>Button</span><b>IRQ</b><span>State</span></div><div class="board-wire"></div><div class="board-flow bottom"><span>LED / LCD</span><b>Output</b><span>Main loop</span></div></div>'''
+
+
+page = head('Hojoon Lee', 'Electrical and electronic engineering student at Yonsei University. Projects in operating systems, computer architecture, and embedded systems.') + header()
+page += '''<main id="main">
+<section class="intro wrap" id="home">
+<h1>Hi, I'm Hojoon.</h1>
+<p>I study electrical and electronic engineering at Yonsei University. I'm interested in operating systems, computer architecture, and memory systems.</p>
+''' + link('GitHub', 'https://github.com/JOON0512', 'intro-link') + '''
+</section>
+<section id="work" class="section wrap"><h2>Projects</h2><div class="project-list">
+'''
+for p in projects:
+    page += f'''<article class="project-row" id="project-{p['id']}">
+<div class="project-label"><h3><a href="work/{p['id']}.html">{p['name']}</a></h3><p class="project-meta">{p['scope']}</p></div>
+<div class="project-copy"><p>{p['summary']}</p><div class="project-links"><a href="work/{p['id']}.html">Notes <span aria-hidden="true">↗</span></a>'''
+    if p['links']:
+        page += link('Code', p['links'][0][1])
+    page += '</div></div></article>\n'
+page += '''</div></section>
+<section id="teaching" class="section wrap"><h2>Teaching</h2>
+<div class="teaching-entries">
+<article><div><h3>Operating systems</h3><p class="project-meta">Tutor · Yonsei University</p></div><p>Tutored students through the department's honor society, drawing on my experience with the xv6 labs.</p></article>
+<article><div><h3>Analog circuits</h3><p class="project-meta">Tutor · Spring 2025</p></div><p>Helped students with circuit theory, PSpice, and lab reports.</p></article>
+<article><div><h3>CoMit</h3><p class="project-meta">Vice president · 2022–2023</p></div><p>Organized study groups and ran C programming sessions for club members.</p></article>
+</div>
+<div id="video-section" hidden><div id="videos" class="video-grid"></div></div>
+</section>
+<section id="about" class="section wrap about"><h2>About</h2><div class="about-copy">
+<p>Before Yonsei, I studied industrial design and systems management engineering. I'm now finishing my undergraduate degree in electrical and electronic engineering, with graduation expected in February 2027.</p>
+<p>At CORELAB, I studied ''' + link('LLVM IR through tutorials', 'https://github.com/JOON0512/LLVM101') + '''. I also learned the basics of ALD under supervision in a nanodevice lab.</p>
+<p>A side project: ''' + link('History At Site', 'https://github.com/JOON0512/History_At_Site') + ''', a globe for exploring where and when films are set.</p>
+</div></section>
+</main>''' + footer()
+(docs / 'index.html').write_text(page)
+
+for i, p in enumerate(projects):
+    following = projects[(i + 1) % len(projects)]
+    page = head(p['name'] + ' — Hojoon Lee', p['intro'], '../') + header('../')
+    page += f'''<main id="main" class="case wrap"><a href="../index.html#project-{p['id']}" class="back-link">← Projects</a>
+<header class="case-header"><h1>{p['name']}</h1><p class="case-subtitle">{p['sub']}</p><div class="case-meta"><span>{p['scope']}</span><span>{p['tech']}</span></div></header>
+<div class="case-layout"><article class="case-body"><p class="case-intro">{p['intro']}</p>'''
+    for title, body in p['points']:
+        page += f'<section><h2>{title}</h2><p>{body}</p></section>\n'
+    page += f'''</article><aside class="case-sidebar"><figure>{visual(p['id'])}<figcaption>Schematic</figcaption></figure>'''
+    if p['links']:
+        page += '<div class="case-sources">' + ''.join(link(t, u, 'source-link') for t, u in p['links']) + '</div>'
+    elif p.get('source_note'):
+        page += f'<p class="source-note">{p["source_note"]}</p>'
+    page += f'''</aside></div><a class="next-case" href="{following['id']}.html"><span>Next: {following['name']}</span><span aria-hidden="true">→</span></a></main>''' + footer('../')
+    (docs / 'work' / f"{p['id']}.html").write_text(page)
+
+(docs / 'data/projects.json').write_text(json.dumps(projects, indent=2) + '\n')
+print('Built homepage and four project pages.')

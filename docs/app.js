@@ -6,8 +6,8 @@
   const system = window.matchMedia('(prefers-color-scheme: dark)');
   const apply = theme => {
     root.dataset.theme = theme;
-    button?.setAttribute('aria-label', theme === 'dark' ? '밝은 테마로 전환' : '어두운 테마로 전환');
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#111722' : '#f8f9fc');
+    button?.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#171b20' : '#fafaf8');
   };
   apply(saved === 'dark' || saved === 'light' ? saved : system.matches ? 'dark' : 'light');
   if (button) {
@@ -27,13 +27,13 @@
       if (!/^[\w-]{11}$/.test(item.id) || typeof item.title !== 'string') continue;
       const article = document.createElement('article');
       const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube-nocookie.com/embed/${item.id}`;
+      iframe.src = `https://www.youtube-nocookie.com/embed/${item.id}?hl=en`;
       iframe.title = item.title;
       iframe.loading = 'lazy';
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
       iframe.allowFullscreen = true;
       iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-      const title = document.createElement('h4');
+      const title = document.createElement('h3');
       title.textContent = item.title;
       const caption = document.createElement('div');
       caption.className = 'video-caption';
@@ -49,8 +49,8 @@
       watch.href = `https://www.youtube.com/watch?v=${item.id}`;
       watch.target = '_blank';
       watch.rel = 'noopener noreferrer';
-      watch.textContent = 'YouTube에서 보기 ↗';
-      watch.setAttribute('aria-label', `${item.title} — YouTube에서 보기`);
+      watch.textContent = 'Watch on YouTube ↗';
+      watch.setAttribute('aria-label', `${item.title} — Watch on YouTube`);
       caption.append(watch);
       article.append(iframe, caption);
       videos.append(article);
