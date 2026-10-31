@@ -35,7 +35,24 @@
       iframe.referrerPolicy = 'strict-origin-when-cross-origin';
       const title = document.createElement('h4');
       title.textContent = item.title;
-      article.append(iframe, title);
+      const caption = document.createElement('div');
+      caption.className = 'video-caption';
+      caption.append(title);
+      if (typeof item.duration === 'string') {
+        const duration = document.createElement('p');
+        duration.className = 'video-duration';
+        duration.textContent = item.duration;
+        caption.append(duration);
+      }
+      const watch = document.createElement('a');
+      watch.className = 'text-link';
+      watch.href = `https://www.youtube.com/watch?v=${item.id}`;
+      watch.target = '_blank';
+      watch.rel = 'noopener noreferrer';
+      watch.textContent = 'YouTube에서 보기 ↗';
+      watch.setAttribute('aria-label', `${item.title} — YouTube에서 보기`);
+      caption.append(watch);
+      article.append(iframe, caption);
       videos.append(article);
     }
     if (videos.children.length) document.getElementById('video-section').hidden = false;
