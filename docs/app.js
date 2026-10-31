@@ -55,6 +55,10 @@
       article.append(iframe, caption);
       videos.append(article);
     }
-    if (videos.children.length) document.getElementById('video-section').hidden = false;
+    if (videos.children.length) {
+      const section = document.getElementById('video-section');
+      section.hidden = false;
+      if (window.location.hash === '#video-section') section.scrollIntoView();
+    }
   }).catch(() => { /* No video section until real videos are available. */ });
 })();
